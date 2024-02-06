@@ -17,20 +17,14 @@ internal class Program
 
             client.Bind(localEndPoint);
 
-            //client.ReceiveTimeout = 0;
-
-#pragma warning disable S2486 // Generic exceptions should not be ignored
             try
             {
                 client.Connect(remoteEndPoint);
             }
             catch
-#pragma warning disable S108 // Nested blocks of code should not be left empty
             {
-            
+
             }
-#pragma warning restore S108 // Nested blocks of code should not be left empty
-#pragma warning restore S2486 // Generic exceptions should not be ignored
 
             if (client.Connected)
             {
@@ -46,20 +40,19 @@ internal class Program
 
             byte[] buffer = Encoding.UTF8.GetBytes("Hello!");
 
-            Console.WriteLine("Push any key to send");
-            Console.ReadKey(true);
-
-            int count = client.Send(buffer);
-
-            if (count == buffer.Length)
+            if (client.Poll(100, SelectMode.SelectWrite) && client.Poll(100, SelectMode.SelectError))
             {
-                Console.WriteLine("Send.");
-            }
-            else
-            {
-                Console.WriteLine("something wrong...");
-            }
+                int count = client.Send(buffer);
 
+                if (count == buffer.Length)
+                {
+                    Console.WriteLine("Send.");
+                }
+                else
+                {
+                    Console.WriteLine("something wrong...");
+                }
+            }
         }
     }
 }

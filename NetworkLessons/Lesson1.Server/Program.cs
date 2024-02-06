@@ -13,7 +13,6 @@ internal class Program
             var localEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5000);
 
             listener.Blocking = true;
-            //listener.Blocking = false;
 
             listener.Bind(localEndPoint);
 
@@ -23,19 +22,26 @@ internal class Program
 
             Socket? socket = null;
 
-            do
+            while (true)
             {
-                try
+                List<Socket> sread = new List<Socket> { listener };
+                List<Socket> swrite = new List<Socket> { listener };
+                List<Socket> serror = new List<Socket> { listener };
+
+                Socket.Select(sread, swrite, serror, 100);
+
+                if (sread.Count > 0)
                 {
-                    socket = listener.Accept();
+                    break;
                 }
-                catch
+                else
                 {
                     Console.Write(".");
                     Thread.Sleep(1000);
                 }
             }
-            while (socket == null);
+
+            socket = listener.Accept();
 
             Console.WriteLine("Connected!");
 
@@ -44,11 +50,7 @@ internal class Program
 
             byte[] buffer = new byte[255];
 
-            //while (socket.Available == 0) ;
-
-            //Console.WriteLine($"Avalible {socket.Available} bytes for reading.");
-
-            socket.ReceiveTimeout = 2000;
+            while (socket.Available == null) ;
 
             int count = socket.Receive(buffer);
 
