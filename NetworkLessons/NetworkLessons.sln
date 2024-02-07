@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lesson1", "Lesson1\Lesson1.csproj", "{93BC2D2D-D5EF-4875-9E9D-5B7D7C815D91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lesson1", "Lesson1\Lesson1.csproj", "{93BC2D2D-D5EF-4875-9E9D-5B7D7C815D91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lesson1.Client", "Lesson1.Client\Lesson1.Client.csproj", "{BDA54E91-1222-447E-A449-1DC112B73DE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lesson1.Client", "Lesson1.Client\Lesson1.Client.csproj", "{BDA54E91-1222-447E-A449-1DC112B73DE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lesson1.Server", "Lesson1.Server\Lesson1.Server.csproj", "{1BC1F60F-7FB4-42C9-B412-593C8F97C8AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lesson1.Server", "Lesson1.Server\Lesson1.Server.csproj", "{1BC1F60F-7FB4-42C9-B412-593C8F97C8AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lesson1.ServerUDP", "Lesson1.ServerUDP\Lesson1.ServerUDP.csproj", "{504B9407-C1AF-40EA-80D5-1C842DA0B759}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lesson1.ServerUDP", "Lesson1.ServerUDP\Lesson1.ServerUDP.csproj", "{504B9407-C1AF-40EA-80D5-1C842DA0B759}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lesson1.ClientUdp", "Lesson1.ClientUdp\Lesson1.ClientUdp.csproj", "{0D70F68D-176C-4D69-973D-B341844FBED4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lesson1.ClientUdp", "Lesson1.ClientUdp\Lesson1.ClientUdp.csproj", "{0D70F68D-176C-4D69-973D-B341844FBED4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lesson1.UDPClientAsync", "Lesson1.UDPClientAsync\Lesson1.UDPClientAsync.csproj", "{F87C2BBB-D68B-4043-86D8-7D93A9919DD8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{0D70F68D-176C-4D69-973D-B341844FBED4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D70F68D-176C-4D69-973D-B341844FBED4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D70F68D-176C-4D69-973D-B341844FBED4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F87C2BBB-D68B-4043-86D8-7D93A9919DD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F87C2BBB-D68B-4043-86D8-7D93A9919DD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F87C2BBB-D68B-4043-86D8-7D93A9919DD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F87C2BBB-D68B-4043-86D8-7D93A9919DD8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

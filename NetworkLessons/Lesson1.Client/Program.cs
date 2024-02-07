@@ -8,51 +8,22 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        using (Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
+        using (TcpClient client = new())
         {
             var remoteEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5000);
-            var localEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5005);
 
-            Console.WriteLine("Connecting...");
+            client.Connect(remoteEndPoint);
 
-            client.Bind(localEndPoint);
+            var reader = new StreamReader(client.GetStream());
+            var writer = new StreamWriter(client.GetStream());
 
-            try
-            {
-                client.Connect(remoteEndPoint);
-            }
-            catch
-            {
+            writer.WriteLine("Hello, I am Client!");
+            writer.Flush();
+            var result = reader.ReadLine();
+            Console.WriteLine(result);
 
-            }
-
-            if (client.Connected)
-            {
-                Console.WriteLine("Connected!");
-                Console.WriteLine($"LocalEndPoint = {client.LocalEndPoint}");
-                Console.WriteLine($"RemoteEndPoint = {client.RemoteEndPoint}");
-            }
-            else
-            {
-                Console.WriteLine("Connection problems...");
-                return;
-            }
-
-            byte[] buffer = Encoding.UTF8.GetBytes("Hello!");
-
-            if (client.Poll(100, SelectMode.SelectWrite) && client.Poll(100, SelectMode.SelectError))
-            {
-                int count = client.Send(buffer);
-
-                if (count == buffer.Length)
-                {
-                    Console.WriteLine("Send.");
-                }
-                else
-                {
-                    Console.WriteLine("something wrong...");
-                }
-            }
         }
+
+        Console.ReadKey(true);
     }
 }
