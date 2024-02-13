@@ -2,7 +2,7 @@
 
 namespace Lesson1.Seminar.Server;
 
-internal partial class Program
+internal class Program
 {
     static async Task Main(string[] args)
     {
