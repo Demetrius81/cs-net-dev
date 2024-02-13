@@ -2,9 +2,9 @@
 
 internal class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         ChatClient chatClient = new ChatClient();
-        chatClient.Run(args);
+        await chatClient.Run(args);
     }
 }

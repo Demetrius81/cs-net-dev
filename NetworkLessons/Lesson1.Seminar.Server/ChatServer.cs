@@ -25,11 +25,13 @@ public sealed class ChatServer
 
             while (true)
             {
-                var tcpClient = await this._listener.AcceptTcpClientAsync();
-                this._listClients.Add(++this._count, tcpClient);
-                var client = new ClientInfo(tcpClient, this._count);
-                await Console.Out.WriteLineAsync($"Client No {this._count} IP: {tcpClient.Client.RemoteEndPoint} successfully connected");
-                _ = Task.Run(() => ProcessClient(client));
+                using (var tcpClient = await this._listener.AcceptTcpClientAsync())
+                {
+                    this._listClients.Add(++this._count, tcpClient);
+                    var client = new ClientInfo(tcpClient, this._count);
+                    await Console.Out.WriteLineAsync($"Client No {this._count} IP: {tcpClient.Client.RemoteEndPoint} successfully connected");
+                    _ = Task.Run(() => ProcessClient(client));
+                }
             }
         }
         catch (SocketException ex)
@@ -55,7 +57,7 @@ public sealed class ChatServer
         if (message != null)
         {
             await BroadcastSending(clientInfo, message);
-        } 
+        }
         else
         {
             Console.WriteLine("Message is null");
@@ -68,7 +70,7 @@ public sealed class ChatServer
     {
         foreach (var key in this._listClients.Keys)
         {
-            if (key != clientInfo.Id)
+            //if (key != clientInfo.Id)
             {
                 var writer = new StreamWriter(this._listClients[key].GetStream());
                 await writer.WriteLineAsync(data);
