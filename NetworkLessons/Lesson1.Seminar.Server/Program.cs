@@ -7,6 +7,6 @@ internal class Program
     static async Task Main(string[] args)
     {
         ChatServer server = new ChatServer();
-        await server.Run(args);
+        await server.RunAsync(args);
     }
 }

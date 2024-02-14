@@ -6,94 +6,75 @@ namespace Lesson1.Seminar.Server;
 public sealed class ChatServer
 {
     private readonly TcpListener _listener;
-    private readonly Dictionary<int, TcpClient> _listClients;
-    private int _count;
+    private readonly List<ClientInfo> _clients;
 
     public ChatServer()
     {
         this._listener = new TcpListener(IPAddress.Any, 5000);
-        this._listClients = new Dictionary<int, TcpClient>();
-        this._count = 0;
+        this._clients = new List<ClientInfo>();
     }
 
-    public async Task Run(string[] args)
+    /// <summary>Removing connection</summary>
+    internal void RemoveConnection(string id)
+    {
+        ClientInfo? client = this._clients.FirstOrDefault(x => x.Id == id);
+
+        if (client is not null)
+        {
+            this._clients.Remove(client);
+        }
+
+        client?.Close();
+    }
+
+    /// <summary>Run server and listen the connect</summary>
+    internal async Task RunAsync(string[] args)
     {
         try
         {
-            _listener.Start();
-            await Console.Out.WriteLineAsync("Server is started.");
+            this._listener.Start();
+            await Console.Out.WriteLineAsync("Server is started, wait for connections...");
 
             while (true)
             {
-                using (var tcpClient = await this._listener.AcceptTcpClientAsync())
-                {
-                    this._listClients.Add(++this._count, tcpClient);
-                    var client = new ClientInfo(tcpClient, this._count);
-                    await Console.Out.WriteLineAsync($"Client No {this._count} IP: {tcpClient.Client.RemoteEndPoint} successfully connected");
-                    _ = Task.Run(() => ProcessClient(client));
-                }
+                TcpClient tcpClient = await this._listener.AcceptTcpClientAsync();
+
+                ClientInfo clientInfo = new ClientInfo(tcpClient, this);
+                await Console.Out.WriteLineAsync($"Client {clientInfo.Id} connected.");
+                this._clients.Add(clientInfo);
+                _ = Task.Run(clientInfo.ClientProcessAsync);
             }
-        }
-        catch (SocketException ex)
-        {
-            Console.WriteLine(ex.ToString());
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.ToString());
+            await Console.Out.WriteLineAsync(ex.ToString());
         }
         finally
         {
-            _listener?.Stop();
-            _listener?.Dispose();
+            Disconnect();
         }
     }
 
-    private async Task ProcessClient(ClientInfo clientInfo)
+    /// <summary>Send messages to all clients</summary>
+    internal async Task BroadcastMessageAsync(string message, string id)
     {
-        var reader = new StreamReader(clientInfo.Client.GetStream());
-        var message = await reader.ReadLineAsync();
-
-        if (message != null)
+        foreach (var client in this._clients)
         {
-            await BroadcastSending(clientInfo, message);
-        }
-        else
-        {
-            Console.WriteLine("Message is null");
-        }
-
-
-    }
-
-    private async Task BroadcastSending(ClientInfo clientInfo, string data)
-    {
-        foreach (var key in this._listClients.Keys)
-        {
-            //if (key != clientInfo.Id)
+            if (client.Id != id)
             {
-                var writer = new StreamWriter(this._listClients[key].GetStream());
-                await writer.WriteLineAsync(data);
+                await client.Writer.WriteLineAsync(message);
+                await client.Writer.FlushAsync();
             }
         }
     }
-}
-
-
-
-internal sealed class ClientInfo
-{
-    public TcpClient Client { get; init; } = null!;
-    public int Id { get; init; }
-
-    public ClientInfo(TcpClient client, int id)
+    
+    /// <summary>Disconnect all clients and stop server</summary>
+    private void Disconnect()
     {
-        if (client is null)
+        foreach (var client in this._clients)
         {
-            throw new ArgumentNullException(nameof(client), "Class ClientInfo method ClientInfo. Argument is null");
+            client.Close();
         }
-
-        this.Client = client;
-        this.Id = id;
+        this._listener.Stop();
     }
 }

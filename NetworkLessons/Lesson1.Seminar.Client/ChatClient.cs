@@ -1,62 +1,83 @@
-﻿using System.Net;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 
 namespace Lesson1.Seminar.Client;
 
-public class ChatClient
+class ChatClient
 {
-    private readonly IPEndPoint _remoteEndPoint;
+    /// <summary>Run client</summary>
+    public async Task RunAsync(string[] args)
+    {
+#if DEBUG
+        string host = "127.0.0.1";
+#else
+        string host = args[0];
+#endif
+        int port = 5000;
 
-    public ChatClient()
-    {
-        _remoteEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5000);
-    }
-    public async Task Run(string[] args)
-    {
-        using (TcpClient client = new())
+        using TcpClient client = new();
+        Console.Write("Enter your name> ");
+        string? userName = Console.ReadLine();
+        Console.WriteLine($"Welcome to supersectet chat, {userName}");
+        StreamReader? Reader = null;
+        StreamWriter? Writer = null;
+
+        try
         {
-            string? msg;
+            client.Connect(host, port);
+            Reader = new StreamReader(client.GetStream());
+            Writer = new StreamWriter(client.GetStream());
 
-            client.Connect(this._remoteEndPoint);
-
-            while (true)
+            if (Writer is null || Reader is null)
             {
-                var reader = new StreamReader(client.GetStream());
-                var writer = new StreamWriter(client.GetStream());
+                return;
+            }
 
-                msg = InputMessage();
+            _ = Task.Run(() => ReceiveMessageAsync(Reader));
+            await SendMessageAsync(Writer, userName ?? "");
+        }
+        catch (Exception ex)
+        {
+            await Console.Out.WriteLineAsync(ex.ToString());
+        }
+        Writer?.Close();
+        Reader?.Close();
+    }
 
-                await writer.WriteLineAsync(msg);
-                await writer.FlushAsync();
+    /// <summary>Send messages</summary>
+    async Task SendMessageAsync(StreamWriter writer, string userName)
+    {
+        await writer.WriteLineAsync(userName);
+        await writer.FlushAsync();
+        await Console.Out.WriteLineAsync("For send message enter message and push <Enter>:");
 
-                msg = await reader.ReadLineAsync();
+        while (true)
+        {
+            string? message = Console.ReadLine();
+            await writer.WriteLineAsync(message);
+            await writer.FlushAsync();
+        }
+    }
 
-                if (msg is not null)
+    /// <summary>Recive messages</summary>
+    async Task ReceiveMessageAsync(StreamReader reader)
+    {
+        while (true)
+        {
+            try
+            {
+                string? message = await reader.ReadLineAsync();
+
+                if (string.IsNullOrEmpty(message))
                 {
-                    await Console.Out.WriteLineAsync(msg);
+                    continue;
                 }
-                msg = reader.ReadLine();
-                if (msg is not null)
-                {
-                    await Console.Out.WriteLineAsync(msg);
-                }
+
+                await Console.Out.WriteLineAsync(message);
+            }
+            catch
+            {
+                break;
             }
         }
-
-
-
-
-
-        //TcpClient tcpClient = new TcpClient();
-        //Thread.Sleep(1000);
-        //tcpClient.Connect("127.0.0.1", 5000);
-        //Console.ReadKey();
-    }
-
-    private string InputMessage()
-    {
-        Console.Write(">");
-        var str = Console.ReadLine();
-        return str ?? "";
     }
 }

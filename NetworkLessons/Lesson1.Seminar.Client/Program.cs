@@ -5,6 +5,6 @@ internal class Program
     static async Task Main(string[] args)
     {
         ChatClient chatClient = new ChatClient();
-        await chatClient.Run(args);
+        await chatClient.RunAsync(args);
     }
 }
