@@ -18,34 +18,35 @@ class ChatClient
         Console.Write("Enter your name> ");
         string? userName = Console.ReadLine();
         Console.WriteLine($"Welcome to supersectet chat, {userName}");
-        StreamReader? Reader = null;
-        StreamWriter? Writer = null;
+        StreamReader? reader = null;
+        StreamWriter? writer = null;
 
         try
         {
             client.Connect(host, port);
-            Reader = new StreamReader(client.GetStream());
-            Writer = new StreamWriter(client.GetStream());
+            reader = new StreamReader(client.GetStream());
+            writer = new StreamWriter(client.GetStream());
 
-            if (Writer is null || Reader is null)
-            {
-                return;
-            }
-
-            _ = Task.Run(() => ReceiveMessageAsync(Reader));
-            await SendMessageAsync(Writer, userName ?? "");
+            _ = Task.Run(() => ReceiveMessageAsync(reader));
+            await SendMessageAsync(writer, userName ?? "");
         }
         catch (Exception ex)
         {
             await Console.Out.WriteLineAsync(ex.ToString());
         }
-        Writer?.Close();
-        Reader?.Close();
+
+        writer?.Close();
+        reader?.Close();
     }
 
     /// <summary>Send messages</summary>
-    async Task SendMessageAsync(StreamWriter writer, string userName)
+    async Task SendMessageAsync(StreamWriter? writer, string userName)
     {
+        if (writer is null)
+        {
+            return;
+        }
+
         await writer.WriteLineAsync(userName);
         await writer.FlushAsync();
         await Console.Out.WriteLineAsync("For send message enter message and push <Enter>:");
@@ -59,8 +60,13 @@ class ChatClient
     }
 
     /// <summary>Recive messages</summary>
-    async Task ReceiveMessageAsync(StreamReader reader)
+    async Task ReceiveMessageAsync(StreamReader? reader)
     {
+        if (reader is null)
+        {
+            return;
+        }
+
         while (true)
         {
             try

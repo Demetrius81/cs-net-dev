@@ -17,7 +17,7 @@ public sealed class ChatServer
     /// <summary>Removing connection</summary>
     internal void RemoveConnection(string id)
     {
-        ClientInfo? client = this._clients.FirstOrDefault(x => x.Id == id);
+        ClientInfo? client = this._clients.Find(x => x.Id == id);
 
         if (client is not null)
         {
@@ -39,7 +39,7 @@ public sealed class ChatServer
             {
                 TcpClient tcpClient = await this._listener.AcceptTcpClientAsync();
 
-                ClientInfo clientInfo = new ClientInfo(tcpClient, this);
+                ClientInfo clientInfo = new(tcpClient, this);
                 await Console.Out.WriteLineAsync($"Client {clientInfo.Id} connected.");
                 this._clients.Add(clientInfo);
                 _ = Task.Run(clientInfo.ClientProcessAsync);

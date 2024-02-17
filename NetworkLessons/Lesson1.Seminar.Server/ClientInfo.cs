@@ -36,7 +36,12 @@ internal sealed class ClientInfo
                 try
                 {
                     message = await this.Reader.ReadLineAsync();
-                    if (message == null) continue;
+
+                    if (message == null)
+                    {
+                        continue;
+                    }
+
                     message = $"{userName}: {message}";
                     Console.WriteLine(message);
                     await this._server.BroadcastMessageAsync(message, this.Id);
