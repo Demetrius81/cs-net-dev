@@ -42,6 +42,8 @@ internal sealed class ClientInfo
                         continue;
                     }
 
+                    // TODO: Add check to exit phrase and run RemoveConnection
+
                     message = $"{userName}: {message}";
                     Console.WriteLine(message);
                     await this._server.BroadcastMessageAsync(message, this.Id);
