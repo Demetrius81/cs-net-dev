@@ -79,5 +79,6 @@ internal sealed class ClientInfo
         this.Writer.Close();
         this.Reader.Close();
         this._client.Close();
+        Console.WriteLine($"Client {this.Id} disconnected.");
     }
 }
