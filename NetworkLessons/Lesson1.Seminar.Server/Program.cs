@@ -6,12 +6,12 @@ internal class Program
 {
     protected Program() { }
 
-    static async Task Main(string[] args)
+    static void Main(string[] args)
     {
         CancellationTokenSource cts = new();
         CancellationToken token = cts.Token;
 
-        ChatServer server = new();
+        ChatServer server = ChatServer.Instance;
         _ = Task.Run(() => server.RunAsync(args, token));
 
         Console.ReadKey();

@@ -3,12 +3,16 @@ using System.Net;
 
 namespace Lesson1.Seminar.Server;
 
-public sealed class ChatServer
+public sealed class ChatServer : IDisposable
 {
     private readonly TcpListener _listener;
     private readonly List<ClientInfo> _clients;
+    private static readonly Lazy<ChatServer> _instance = new(() => new ChatServer());
+    private bool disposedValue;
 
-    public ChatServer()
+    public static ChatServer Instance => _instance.Value;
+
+    private ChatServer()
     {
         this._listener = new TcpListener(IPAddress.Any, 5000);
         this._clients = new List<ClientInfo>();
@@ -24,7 +28,7 @@ public sealed class ChatServer
             this._clients.Remove(client);
         }
 
-        client?.Close();
+        client?.Dispose();
     }
 
     /// <summary>Run server and listen the connect</summary>
@@ -37,8 +41,6 @@ public sealed class ChatServer
 
             while (!cancel.IsCancellationRequested)
             {
-                await Console.Out.WriteLineAsync("RunAsync: " + Environment.CurrentManagedThreadId);
-
                 TcpClient tcpClient = await this._listener.AcceptTcpClientAsync();
 
                 ClientInfo clientInfo = new(tcpClient, this);
@@ -53,11 +55,11 @@ public sealed class ChatServer
         }
         finally
         {
-            Disconnect();
+            Dispose();
         }
     }
 
-    
+
 
     /// <summary>Send messages to all clients</summary>
     internal async Task BroadcastMessageAsync(string message, string id)
@@ -71,14 +73,34 @@ public sealed class ChatServer
             }
         }
     }
-    
+
     /// <summary>Disconnect all clients and stop server</summary>
     private void Disconnect()
     {
         foreach (var client in this._clients)
         {
-            client.Close();
+            client.Dispose();
         }
         this._listener.Stop();
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                Disconnect();
+            }
+
+            Disconnect();
+            disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

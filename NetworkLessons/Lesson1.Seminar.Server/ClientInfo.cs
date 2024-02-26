@@ -2,7 +2,7 @@
 
 namespace Lesson1.Seminar.Server;
 
-internal sealed class ClientInfo
+internal sealed class ClientInfo : IDisposable
 {
     internal string Id { get; init; }
     internal StreamWriter Writer { get; init; }
@@ -10,6 +10,7 @@ internal sealed class ClientInfo
 
     private readonly TcpClient _client;
     private readonly ChatServer _server;
+    private bool disposedValue;
 
     internal ClientInfo(TcpClient tcpClient, ChatServer serverObject)
     {
@@ -75,11 +76,31 @@ internal sealed class ClientInfo
     }
 
     /// <summary>Close connection</summary>
-    internal void Close()
+    private void Close()
     {
         this.Writer.Close();
         this.Reader.Close();
         this._client.Close();
         Console.WriteLine($"Client {this.Id} disconnected.");
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                Close();
+            }
+
+            Close();
+            disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }
