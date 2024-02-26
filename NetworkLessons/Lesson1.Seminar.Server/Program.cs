@@ -8,7 +8,13 @@ internal class Program
 
     static async Task Main(string[] args)
     {
-        ChatServer server = new ChatServer();
-        await server.RunAsync(args);
+        CancellationTokenSource cts = new();
+        CancellationToken token = cts.Token;
+
+        ChatServer server = new();
+        _ = Task.Run(() => server.RunAsync(args, token));
+
+        Console.ReadKey();
+        cts.Cancel();
     }
 }

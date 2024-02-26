@@ -42,7 +42,14 @@ internal sealed class ClientInfo
                         continue;
                     }
 
-                    // TODO: Add check to exit phrase and run RemoveConnection
+
+                    if (message == "Exit")
+                    {
+                        message = $"{userName}: Disconnected.";
+                        Console.WriteLine(message);
+                        await this._server.BroadcastMessageAsync(message, this.Id);
+                        this._server.RemoveConnection(this.Id);
+                    }
 
                     message = $"{userName}: {message}";
                     Console.WriteLine(message);
@@ -73,5 +80,6 @@ internal sealed class ClientInfo
         this.Writer.Close();
         this.Reader.Close();
         this._client.Close();
+        Console.WriteLine($"Client {this.Id} disconnected.");
     }
 }
