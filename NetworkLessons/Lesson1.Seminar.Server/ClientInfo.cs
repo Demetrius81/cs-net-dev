@@ -42,6 +42,7 @@ internal sealed class ClientInfo
                         continue;
                     }
 
+
                     if (message == "Exit")
                     {
                         message = $"{userName}: Disconnected.";
