@@ -42,6 +42,14 @@ internal sealed class ClientInfo
                         continue;
                     }
 
+                    if (message == "Exit")
+                    {
+                        message = $"{userName}: Disconnected.";
+                        Console.WriteLine(message);
+                        await this._server.BroadcastMessageAsync(message, this.Id);
+                        this._server.RemoveConnection(this.Id);
+                    }
+
                     message = $"{userName}: {message}";
                     Console.WriteLine(message);
                     await this._server.BroadcastMessageAsync(message, this.Id);

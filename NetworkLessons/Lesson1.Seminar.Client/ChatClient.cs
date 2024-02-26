@@ -15,8 +15,12 @@ class ChatClient
         int port = 5000;
 
         using TcpClient client = new();
+#if DEBUG
+        string? userName = Guid.NewGuid().GetHashCode().ToString();
+#else
         Console.Write("Enter your name> ");
         string? userName = Console.ReadLine();
+#endif
         Console.WriteLine($"Welcome to supersectet chat, {userName}");
         StreamReader? reader = null;
         StreamWriter? writer = null;
@@ -51,11 +55,34 @@ class ChatClient
         await writer.FlushAsync();
         await Console.Out.WriteLineAsync("For send message enter message and push <Enter>:");
 
+#if DEBUG
+        bool flag = true;
+#endif
+
         while (true)
         {
+#if DEBUG
+            string? message = null;
+            if (flag)
+            {
+                message = "Hello! this is a test! One, two, three. Check the connect";
+                flag = false;
+            }
+            else
+            {
+                message = Console.ReadLine();
+            }
+
+#else
             string? message = Console.ReadLine();
+#endif
             await writer.WriteLineAsync(message);
             await writer.FlushAsync();
+
+            if (message == "Exit")
+            {
+                return;
+            }
         }
     }
 
