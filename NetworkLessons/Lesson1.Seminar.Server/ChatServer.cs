@@ -28,15 +28,17 @@ public sealed class ChatServer
     }
 
     /// <summary>Run server and listen the connect</summary>
-    internal async Task RunAsync(string[] args)
+    internal async Task RunAsync(string[] args, CancellationToken cancel)
     {
         try
         {
             this._listener.Start();
             await Console.Out.WriteLineAsync("Server is started, wait for connections...");
 
-            while (true)
+            while (!cancel.IsCancellationRequested)
             {
+                await Console.Out.WriteLineAsync("RunAsync: " + Environment.CurrentManagedThreadId);
+
                 TcpClient tcpClient = await this._listener.AcceptTcpClientAsync();
 
                 ClientInfo clientInfo = new(tcpClient, this);
@@ -54,6 +56,8 @@ public sealed class ChatServer
             Disconnect();
         }
     }
+
+    
 
     /// <summary>Send messages to all clients</summary>
     internal async Task BroadcastMessageAsync(string message, string id)
