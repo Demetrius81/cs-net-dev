@@ -1,5 +1,7 @@
 ﻿using System.Net.Sockets;
 using System.Net;
+using Lesson1.Seminar.Server.Models.DTO;
+using Lesson1.Seminar.Server.Models;
 
 namespace Lesson1.Seminar.Server;
 
@@ -19,7 +21,7 @@ public sealed class ChatServer : IDisposable
     }
 
     /// <summary>Removing connection</summary>
-    internal void RemoveConnection(string id)
+    public void RemoveConnection(string id)
     {
         ClientInfo? client = this._clients.Find(x => x.Id == id);
 
@@ -32,7 +34,7 @@ public sealed class ChatServer : IDisposable
     }
 
     /// <summary>Run server and listen the connect</summary>
-    internal async Task RunAsync(string[] args, CancellationToken cancel)
+    public async Task RunAsync(string[] args, CancellationToken cancel)
     {
         try
         {
@@ -59,10 +61,27 @@ public sealed class ChatServer : IDisposable
         }
     }
 
+    public async void SendMessage(MessageDto msg, string clientId)
+    {
+        var json = msg.Serialize();
 
+        if (json is null)
+        {
+            throw new NullReferenceException("Json is null.");
+        }
+
+        foreach (var client in this._clients)
+        {
+            if (client.Id == clientId)
+            {
+                await client.Writer.WriteLineAsync(json);
+                await client.Writer.FlushAsync();
+            }
+        }
+    }
 
     /// <summary>Send messages to all clients</summary>
-    internal async Task BroadcastMessageAsync(string message, string id)
+    public async Task BroadcastMessageAsync(string message, string id)
     {
         foreach (var client in this._clients)
         {
@@ -103,4 +122,6 @@ public sealed class ChatServer : IDisposable
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+
+    
 }

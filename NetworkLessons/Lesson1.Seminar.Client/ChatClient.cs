@@ -2,7 +2,7 @@
 
 namespace Lesson1.Seminar.Client;
 
-class ChatClient
+public class ChatClient
 {
     /// <summary>Run client</summary>
     public async Task RunAsync(string[] args)
@@ -44,7 +44,7 @@ class ChatClient
     }
 
     /// <summary>Send messages</summary>
-    async Task SendMessageAsync(StreamWriter? writer, string userName)
+    public async Task SendMessageAsync(StreamWriter? writer, string userName)
     {
         if (writer is null)
         {
@@ -87,7 +87,7 @@ class ChatClient
     }
 
     /// <summary>Recive messages</summary>
-    async Task ReceiveMessageAsync(StreamReader? reader)
+    public async Task ReceiveMessageAsync(StreamReader? reader)
     {
         if (reader is null)
         {

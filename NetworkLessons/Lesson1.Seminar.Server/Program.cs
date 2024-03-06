@@ -2,11 +2,11 @@
 
 namespace Lesson1.Seminar.Server;
 
-internal class Program
+public class Program
 {
     protected Program() { }
 
-    static void Main(string[] args)
+    public static void Main(string[] args)
     {
         CancellationTokenSource cts = new();
         CancellationToken token = cts.Token;
